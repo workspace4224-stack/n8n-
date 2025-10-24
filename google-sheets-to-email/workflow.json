@@ -1,1 +1,163 @@
 
+{
+  "name": "My workflow 8",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "14g3Yo30ti9YpXl25BpOdQHrBJELshVI083VGDjgPoBE",
+          "mode": "list",
+          "cachedResultName": "Daily Report",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/14g3Yo30ti9YpXl25BpOdQHrBJELshVI083VGDjgPoBE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/14g3Yo30ti9YpXl25BpOdQHrBJELshVI083VGDjgPoBE/edit#gid=0"
+        },
+        "event": "rowAdded",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        -416,
+        -48
+      ],
+      "id": "decdb4ff-c469-4628-ab01-155ed8cee357",
+      "name": "Google Sheets Trigger",
+      "credentials": {
+        "googleSheetsTriggerOAuth2Api": {
+          "id": "WrnvIwxAHOO05IXs",
+          "name": "Google Sheets Trigger account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "14g3Yo30ti9YpXl25BpOdQHrBJELshVI083VGDjgPoBE",
+          "mode": "list",
+          "cachedResultName": "Daily Report",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/14g3Yo30ti9YpXl25BpOdQHrBJELshVI083VGDjgPoBE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/14g3Yo30ti9YpXl25BpOdQHrBJELshVI083VGDjgPoBE/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -176,
+        -48
+      ],
+      "id": "b096e2cc-2b8f-48c3-9e1e-7d80b2601d9b",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "YfJ6k0iRlUD2UO71",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get all rows from Google Sheets\nconst items = $input.all();\n\n// Extract all unique column names\nconst columns = Object.keys(items[0].json);\n\n// Start building HTML\nlet html = `\n<!doctype html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\" />\n<title>Sheet Data</title>\n<style>\n  body { font-family: Arial, sans-serif; background:#f4f6f8; color:#0f1724; }\n  .table-container { max-width:800px; margin:auto; background:#fff; padding:20px; border-radius:12px; box-shadow:0 8px 20px rgba(0,0,0,0.08); }\n  h2 { color:#2563eb; }\n  table { width:100%; border-collapse:collapse; margin-top:15px; }\n  th, td { padding:10px; border:1px solid #e5e7eb; text-align:left; font-size:14px; }\n  th { background:#f1f5f9; }\n  tr:nth-child(even) { background:#f9fafb; }\n</style>\n</head>\n<body>\n  <div class=\"table-container\">\n    <h2>Google Sheet Data</h2>\n    <table>\n      <thead>\n        <tr>${columns.map(col => `<th>${col}</th>`).join('')}</tr>\n      </thead>\n      <tbody>\n`;\n\nfor (const row of items) {\n  html += `<tr>${columns.map(col => `<td>${row.json[col] ?? ''}</td>`).join('')}</tr>`;\n}\n\nhtml += `\n      </tbody>\n    </table>\n  </div>\n</body>\n</html>\n`;\n\nreturn [{ json: { html } }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        128,
+        -48
+      ],
+      "id": "ab743eeb-8e62-4026-b496-e26b7e2aad4e",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "sendTo": "workspace4224@gmail.com",
+        "subject": "Daily report",
+        "message": "={{ $json.html }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        336,
+        -48
+      ],
+      "id": "23f43adb-f556-4d75-b510-287bf7b19eb7",
+      "name": "Send a message",
+      "webhookId": "afa48a62-599d-46ce-8c08-105d5bb4af2e",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "5h6FZY7Zngd52tD8",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Sheets Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "61831d60-5263-481c-818c-7f913956e985",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "58ca1c273151f1bcc30d2cd9f1951f9d3371a24a453d3bc9e7a75e3e1f6442e4"
+  },
+  "id": "wO6nXoF3umoP58Fk",
+  "tags": []
+}
