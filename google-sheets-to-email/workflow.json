@@ -1,6 +1,5 @@
-
 {
-  "name": "My workflow 8",
+  "name": "Dynamic Google Sheet to Email",
   "nodes": [
     {
       "parameters": {
@@ -13,33 +12,30 @@
         },
         "documentId": {
           "__rl": true,
-          "value": "14g3Yo30ti9YpXl25BpOdQHrBJELshVI083VGDjgPoBE",
+          "value": "YOUR_SHEET_ID_HERE",
           "mode": "list",
-          "cachedResultName": "Daily Report",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/14g3Yo30ti9YpXl25BpOdQHrBJELshVI083VGDjgPoBE/edit?usp=drivesdk"
+          "cachedResultName": "Your Sheet Name",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID_HERE/edit"
         },
         "sheetName": {
           "__rl": true,
           "value": "gid=0",
           "mode": "list",
           "cachedResultName": "Sheet1",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/14g3Yo30ti9YpXl25BpOdQHrBJELshVI083VGDjgPoBE/edit#gid=0"
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID_HERE/edit#gid=0"
         },
         "event": "rowAdded",
         "options": {}
       },
       "type": "n8n-nodes-base.googleSheetsTrigger",
       "typeVersion": 1,
-      "position": [
-        -416,
-        -48
-      ],
-      "id": "decdb4ff-c469-4628-ab01-155ed8cee357",
+      "position": [-416, -48],
+      "id": "google-sheets-trigger",
       "name": "Google Sheets Trigger",
       "credentials": {
         "googleSheetsTriggerOAuth2Api": {
-          "id": "WrnvIwxAHOO05IXs",
-          "name": "Google Sheets Trigger account"
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "Google Sheets Trigger Account"
         }
       }
     },
@@ -47,86 +43,77 @@
       "parameters": {
         "documentId": {
           "__rl": true,
-          "value": "14g3Yo30ti9YpXl25BpOdQHrBJELshVI083VGDjgPoBE",
+          "value": "YOUR_SHEET_ID_HERE",
           "mode": "list",
-          "cachedResultName": "Daily Report",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/14g3Yo30ti9YpXl25BpOdQHrBJELshVI083VGDjgPoBE/edit?usp=drivesdk"
+          "cachedResultName": "Your Sheet Name",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID_HERE/edit"
         },
         "sheetName": {
           "__rl": true,
           "value": "gid=0",
           "mode": "list",
           "cachedResultName": "Sheet1",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/14g3Yo30ti9YpXl25BpOdQHrBJELshVI083VGDjgPoBE/edit#gid=0"
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID_HERE/edit#gid=0"
         },
         "options": {}
       },
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
-      "position": [
-        -176,
-        -48
-      ],
-      "id": "b096e2cc-2b8f-48c3-9e1e-7d80b2601d9b",
-      "name": "Get row(s) in sheet",
+      "position": [-176, -48],
+      "id": "get-sheet-data",
+      "name": "Get Row(s) in Sheet",
       "credentials": {
         "googleSheetsOAuth2Api": {
-          "id": "YfJ6k0iRlUD2UO71",
-          "name": "Google Sheets account"
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "Google Sheets Account"
         }
       }
     },
     {
       "parameters": {
-        "jsCode": "// Get all rows from Google Sheets\nconst items = $input.all();\n\n// Extract all unique column names\nconst columns = Object.keys(items[0].json);\n\n// Start building HTML\nlet html = `\n<!doctype html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\" />\n<title>Sheet Data</title>\n<style>\n  body { font-family: Arial, sans-serif; background:#f4f6f8; color:#0f1724; }\n  .table-container { max-width:800px; margin:auto; background:#fff; padding:20px; border-radius:12px; box-shadow:0 8px 20px rgba(0,0,0,0.08); }\n  h2 { color:#2563eb; }\n  table { width:100%; border-collapse:collapse; margin-top:15px; }\n  th, td { padding:10px; border:1px solid #e5e7eb; text-align:left; font-size:14px; }\n  th { background:#f1f5f9; }\n  tr:nth-child(even) { background:#f9fafb; }\n</style>\n</head>\n<body>\n  <div class=\"table-container\">\n    <h2>Google Sheet Data</h2>\n    <table>\n      <thead>\n        <tr>${columns.map(col => `<th>${col}</th>`).join('')}</tr>\n      </thead>\n      <tbody>\n`;\n\nfor (const row of items) {\n  html += `<tr>${columns.map(col => `<td>${row.json[col] ?? ''}</td>`).join('')}</tr>`;\n}\n\nhtml += `\n      </tbody>\n    </table>\n  </div>\n</body>\n</html>\n`;\n\nreturn [{ json: { html } }];\n"
+        "jsCode": "// Dynamically generate HTML table from any Google Sheet\nconst items = $input.all();\nconst columns = Object.keys(items[0].json);\n\nlet html = `<!doctype html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\" />\n<title>Sheet Data</title>\n<style>\n  body { font-family: Arial, sans-serif; background:#f4f6f8; color:#0f1724; }\n  .table-container { max-width:800px; margin:auto; background:#fff; padding:20px; border-radius:12px; box-shadow:0 8px 20px rgba(0,0,0,0.08); }\n  h2 { color:#2563eb; }\n  table { width:100%; border-collapse:collapse; margin-top:15px; }\n  th, td { padding:10px; border:1px solid #e5e7eb; text-align:left; font-size:14px; }\n  th { background:#f1f5f9; }\n  tr:nth-child(even) { background:#f9fafb; }\n</style>\n</head>\n<body>\n  <div class=\"table-container\">\n    <h2>Google Sheet Data</h2>\n    <table>\n      <thead><tr>${columns.map(c => `<th>${c}</th>`).join('')}</tr></thead>\n      <tbody>\n`;\n\nfor (const row of items) {\n  html += `<tr>${columns.map(c => `<td>${row.json[c] ?? ''}</td>`).join('')}</tr>`;\n}\n\nhtml += `</tbody></table></div></body></html>`;\nreturn [{ json: { html } }];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [
-        128,
-        -48
-      ],
-      "id": "ab743eeb-8e62-4026-b496-e26b7e2aad4e",
+      "position": [128, -48],
+      "id": "build-html",
       "name": "Code in JavaScript"
     },
     {
       "parameters": {
-        "sendTo": "workspace4224@gmail.com",
-        "subject": "Daily report",
+        "sendTo": "your@email.com",
+        "subject": "Dynamic Sheet Report",
         "message": "={{ $json.html }}",
-        "options": {}
+        "options": {
+          "htmlBody": true
+        }
       },
       "type": "n8n-nodes-base.gmail",
       "typeVersion": 2.1,
-      "position": [
-        336,
-        -48
-      ],
-      "id": "23f43adb-f556-4d75-b510-287bf7b19eb7",
-      "name": "Send a message",
-      "webhookId": "afa48a62-599d-46ce-8c08-105d5bb4af2e",
+      "position": [336, -48],
+      "id": "send-email",
+      "name": "Send Email",
       "credentials": {
         "gmailOAuth2": {
-          "id": "5h6FZY7Zngd52tD8",
-          "name": "Gmail account"
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "Gmail Account"
         }
       }
     }
   ],
-  "pinData": {},
   "connections": {
     "Google Sheets Trigger": {
       "main": [
         [
           {
-            "node": "Get row(s) in sheet",
+            "node": "Get Row(s) in Sheet",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Get row(s) in sheet": {
+    "Get Row(s) in Sheet": {
       "main": [
         [
           {
@@ -141,7 +128,7 @@
       "main": [
         [
           {
-            "node": "Send a message",
+            "node": "Send Email",
             "type": "main",
             "index": 0
           }
@@ -153,11 +140,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "61831d60-5263-481c-818c-7f913956e985",
-  "meta": {
-    "templateCredsSetupCompleted": true,
-    "instanceId": "58ca1c273151f1bcc30d2cd9f1951f9d3371a24a453d3bc9e7a75e3e1f6442e4"
-  },
-  "id": "wO6nXoF3umoP58Fk",
+  "versionId": "REPLACE_WITH_NEW_UUID",
+  "id": "sanitized-workflow",
   "tags": []
 }
